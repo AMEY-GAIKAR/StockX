@@ -81,7 +81,7 @@ def fetch_news(stock):
 
 def initialize():
     for stock in STOCKS:
-        fetch_data(stock)
+        #fetch_data(stock)
         create_obj(stock)
         fetch_news(stock)
 
