@@ -9,13 +9,17 @@ import plotly.express as px
 import plotly.graph_objects as go
 import plotly.offline as pyo  
 
+
+#AlphaVantageAPI 
 alphavantage_apiendpoint = "https://www.alphavantage.co/query?"
 alphavantage_apikey = "KE7MBHHWS14Q5O95"
 
+#NewsAPI
 newsAPI_endpoint = 'https://newsapi.org/v2/everything?'
 newsAPI_key = 'e566609b3a074d10891c172ccbcdcd62'
 
-STOCKS = ['GOOGL', 'TSLA']    #Inital Stocks to display
+
+STOCKS = ['TSLA']    #Inital Stocks to display
 GRAPHS = []    #for storing all objects 
 ARTICLES = []    #for storing articles
 
@@ -23,6 +27,7 @@ ARTICLES = []    #for storing articles
 #WTFORM to add to list STOCKS
 class AddForm(FlaskForm):
     stock = StringField(label='name', validators=[DataRequired()])
+    exchange = StringField(label='Stock Exchange')
     submit = SubmitField(label='Submit')
 
 
@@ -36,7 +41,8 @@ class Graph():
     
     def process(self):
         self.df['timestamp'] = pd.to_datetime(self.df['timestamp']) #Converts timestamp to datetime type
-        self.DELTA = round((self.df['open'][0] - self.df['open'][1]) / self.df['open'][0] * 100 , 3)    #Calculates difference between today and yesterday 
+        self.DELTA = round((
+            self.df['open'][0] - self.df['open'][1]) / self.df['open'][0] * 100 , 3)    #Calculates difference between today and yesterday 
         self.price = self.df['open'][0] #Current Price
 
     def create_color(self):
@@ -50,8 +56,8 @@ class Graph():
         self.line = px.line(data_frame=self.df, 
                             x=self.df['timestamp'], 
                             y=self.df['open'], 
-                            labels={'x':'', 'y':'USD'}, 
-                            title=f'{self.name}: {self.DELTA}%   Current Price:${self.df["open"][0]}', 
+                            labels={'x':'', 'y':''}, 
+                            title=f'{self.name}: {self.DELTA}%   Current Price: {self.df["open"][0]}', 
                             hover_data=['volume'], 
                             template="plotly_dark")
         pyo.plot(self.line, filename=rf'templates\{self.name}line.html')
@@ -76,9 +82,14 @@ def fetch_data(stock):
     'apikey': alphavantage_apikey,
     'datatype': 'csv'
 }
-    data_daily = requests.get(url=alphavantage_apiendpoint, params=parameters_daily).text
-    with open(rf'static\assets\csv\{stock}.csv', mode='w') as file:
-        file.write(data_daily)
+    response = requests.get(url=alphavantage_apiendpoint, params=parameters_daily)
+    if response.status_code == 200:
+        daily_data = response.text
+        with open(rf'static\assets\csv\{stock}.csv', mode='w') as file:
+            file.write(daily_data)
+        return True
+    else:
+        return False
 
 def create_obj(stock):
     '''Reads the csv files and creates Graph object then appends to list GRAPHS'''
@@ -94,21 +105,24 @@ def fetch_news(stock):
         'sortBy': 'relevancy',
         'language': 'en'
     }
-    news = requests.get(newsAPI_endpoint, params=news_params).json()
-    ARTICLES.append(news)
+    news_response = requests.get(newsAPI_endpoint, params=news_params)
+    news = news_response.json()
+    if news_response.status_code == 200 and news['totalResults'] != 0:
+        ARTICLES.append(news)
+
 
 def initialize():
     '''Downloads csv, creates Graph object and fetches news articles for all items in list STOCKS'''
     for stock in STOCKS:
-        #fetch_data(stock)
-        create_obj(stock)
-        fetch_news(stock)
+        if fetch_data(stock):
+            create_obj(stock)
+            fetch_news(stock)
 
 def singular_initialize(stock):
     '''Downloads csv, creates Graph object and fetches news articles for the passed argument'''
-    fetch_data(stock)
-    create_obj(stock)
-    fetch_news(stock)
+    if fetch_data(stock):
+        create_obj(stock)
+        fetch_news(stock)
 
 initialize()    
 
