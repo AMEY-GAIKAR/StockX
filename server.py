@@ -27,7 +27,6 @@ ARTICLES = []    #for storing articles
 #WTFORM to add to list STOCKS
 class AddForm(FlaskForm):
     stock = StringField(label='name', validators=[DataRequired()])
-    exchange = StringField(label='Stock Exchange')
     submit = SubmitField(label='Submit')
 
 
@@ -110,19 +109,18 @@ def fetch_news(stock):
     if news_response.status_code == 200 and news['totalResults'] != 0:
         ARTICLES.append(news)
 
-
 def initialize():
     '''Downloads csv, creates Graph object and fetches news articles for all items in list STOCKS'''
     for stock in STOCKS:
-        if fetch_data(stock):
-            create_obj(stock)
-            fetch_news(stock)
+        fetch_data(stock)
+        create_obj(stock)
+        fetch_news(stock)
 
 def singular_initialize(stock):
     '''Downloads csv, creates Graph object and fetches news articles for the passed argument'''
-    if fetch_data(stock):
-        create_obj(stock)
-        fetch_news(stock)
+    fetch_data(stock)
+    create_obj(stock)
+    fetch_news(stock)
 
 initialize()    
 
