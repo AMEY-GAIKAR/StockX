@@ -19,9 +19,10 @@ newsAPI_endpoint = 'https://newsapi.org/v2/everything?'
 newsAPI_key = 'e566609b3a074d10891c172ccbcdcd62'
 
 
-STOCKS = ['TSLA']    #Inital Stocks to display
+STOCKS = ['TSLA', 'AAPL', 'GOOGL', 'AMZN', 'META', 'MSFT', 'TCS.BSE', 'RELIANCE.BSE']    #Inital Stocks to display
 GRAPHS = []    #for storing all objects 
 ARTICLES = []    #for storing articles
+LEN = 0 
 
 
 #WTFORM to add to list STOCKS
@@ -107,20 +108,22 @@ def fetch_news(stock):
     news_response = requests.get(newsAPI_endpoint, params=news_params)
     news = news_response.json()
     if news_response.status_code == 200 and news['totalResults'] != 0:
-        ARTICLES.append(news)
+        ARTICLES.append(news['articles'][0])
+    global LEN
+    LEN = len(ARTICLES)
 
 def initialize():
     '''Downloads csv, creates Graph object and fetches news articles for all items in list STOCKS'''
     for stock in STOCKS:
-        fetch_data(stock)
+        # fetch_data(stock)
         create_obj(stock)
-        fetch_news(stock)
+        # fetch_news(stock)
 
 def singular_initialize(stock):
     '''Downloads csv, creates Graph object and fetches news articles for the passed argument'''
     fetch_data(stock)
     create_obj(stock)
-    fetch_news(stock)
+    # fetch_news(stock)
 
 initialize()    
 
@@ -130,7 +133,7 @@ app.config['SECRET_KEY'] = '1j123h21ndu1jd19iackoac93328mcwnejd'
 
 @app.route('/')
 def home():
-    return render_template('index.html', all_graphs = GRAPHS, all_articles=ARTICLES)
+    return render_template('index.html', all_graphs = GRAPHS, all_articles=ARTICLES, len=LEN)
 
 @app.route('/line/<name>')    
 def line(name):
