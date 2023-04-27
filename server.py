@@ -1,25 +1,24 @@
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.offline as pyo  
+import requests
 from flask import Flask, render_template, redirect, url_for
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
-import requests
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-import plotly.offline as pyo  
-
 
 #AlphaVantageAPI 
-alphavantage_apiendpoint = "https://www.alphavantage.co/query?"
-alphavantage_apikey = "KE7MBHHWS14Q5O95"
+ALPHAVANTAGE_API_ENDPOINT = "https://www.alphavantage.co/query?"
+ALPHAVANTAGE_APIKEY = "KE7MBHHWS14Q5O95"
 
 #NewsAPI
-newsAPI_endpoint = 'https://newsapi.org/v2/everything?'
-newsAPI_key = 'e566609b3a074d10891c172ccbcdcd62'
+NEWSAPI_ENDPOINT = 'https://newsapi.org/v2/everything?'
+NEWSAPI_KEY = 'e566609b3a074d10891c172ccbcdcd62'
 
-
-STOCKS = ['TSLA', 'AAPL', 'GOOGL', 'AMZN', 'META', 'MSFT', 'TCS.BSE', 'RELIANCE.BSE']    #Inital Stocks to display
+#Constants & Variables
+STOCKS = ['AAPL', 'GOOGL', 'AMZN', 'META', 'MSFT', 'NFLX', 'HDFCBANK.BSE', 'TCS.BSE']    #Inital Stocks to display
 GRAPHS = []    #for storing all objects 
 ARTICLES = []    #for storing articles
 LEN = 0 
@@ -37,19 +36,11 @@ class Graph():
         self.name = name
         self.df = df
         self.process()  #Calculates Current Price, Difference and converts to datetime 
-        self.create_color() #sets color to green or red depending on DELTA 
-    
+
     def process(self):
         self.df['timestamp'] = pd.to_datetime(self.df['timestamp']) #Converts timestamp to datetime type
-        self.DELTA = round((
-            self.df['open'][0] - self.df['open'][1]) / self.df['open'][0] * 100 , 3)    #Calculates difference between today and yesterday 
+        self.DELTA = round((self.df['open'][0] - self.df['open'][1]) / self.df['open'][0] * 100 , 3)    #Calculates difference between today and yesterday 
         self.price = self.df['open'][0] #Current Price
-
-    def create_color(self):
-        if self.DELTA >= 0 :
-            self.color = 'green'
-        else:
-            self.color = 'red'
     
     def line(self):
         '''Create line graph and saves it as a html file in assets folder'''
@@ -79,17 +70,14 @@ def fetch_data(stock):
     'function': 'TIME_SERIES_DAILY_ADJUSTED',
     'symbol': stock,
     'outputsize': 'compact',
-    'apikey': alphavantage_apikey,
+    'apikey': ALPHAVANTAGE_APIKEY,
     'datatype': 'csv'
 }
-    response = requests.get(url=alphavantage_apiendpoint, params=parameters_daily)
+    response = requests.get(url=ALPHAVANTAGE_API_ENDPOINT, params=parameters_daily)
     if response.status_code == 200:
         daily_data = response.text
         with open(rf'static\assets\csv\{stock}.csv', mode='w') as file:
             file.write(daily_data)
-        return True
-    else:
-        return False
 
 def create_obj(stock):
     '''Reads the csv files and creates Graph object then appends to list GRAPHS'''
@@ -100,12 +88,12 @@ def create_obj(stock):
 def fetch_news(stock):
     '''GET request to newsAPI to fetch news articles and append them to list ARTICLES as json objects'''
     news_params = {
-        'apiKey': newsAPI_key,
+        'apiKey': NEWSAPI_KEY,
         'q': stock,
         'sortBy': 'relevancy',
         'language': 'en'
     }
-    news_response = requests.get(newsAPI_endpoint, params=news_params)
+    news_response = requests.get(NEWSAPI_ENDPOINT, params=news_params)
     news = news_response.json()
     if news_response.status_code == 200 and news['totalResults'] != 0:
         ARTICLES.append(news['articles'][0])
@@ -117,13 +105,13 @@ def initialize():
     for stock in STOCKS:
         # fetch_data(stock)
         create_obj(stock)
-        # fetch_news(stock)
+        fetch_news(stock)
 
 def singular_initialize(stock):
     '''Downloads csv, creates Graph object and fetches news articles for the passed argument'''
     fetch_data(stock)
     create_obj(stock)
-    # fetch_news(stock)
+    fetch_news(stock)
 
 initialize()    
 
