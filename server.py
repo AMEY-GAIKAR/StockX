@@ -9,6 +9,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
+
 #AlphaVantageAPI 
 ALPHAVANTAGE_API_ENDPOINT = "https://www.alphavantage.co/query?"
 ALPHAVANTAGE_APIKEY = "KE7MBHHWS14Q5O95"
