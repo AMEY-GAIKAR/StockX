@@ -9,7 +9,6 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
 
-
 #AlphaVantageAPI 
 ALPHAVANTAGE_API_ENDPOINT = "https://www.alphavantage.co/query?"
 ALPHAVANTAGE_APIKEY = "KE7MBHHWS14Q5O95"
@@ -104,7 +103,7 @@ def fetch_news(stock):
 def initialize():
     '''Downloads csv, creates Graph object and fetches news articles for all items in list STOCKS'''
     for stock in STOCKS:
-        # fetch_data(stock)
+        fetch_data(stock)
         create_obj(stock)
         fetch_news(stock)
 
