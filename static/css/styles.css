@@ -23,7 +23,8 @@
   }
   
   body{
-    height: 100%;
+      background: #131723;
+      height: 100%;
   }
   
   .hero-section{
@@ -478,3 +479,74 @@
       padding:2%;
     }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .CarouselOverlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    content: "";
+    display: block;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    backdrop-filter: blur(5px);
+}
+.CarouselNavigation {
+    position: absolute;
+    z-index: 999999;
+    height: 100%;
+    width: 100%;
+}
+.carousel-indicators {
+    top: 0;
+    bottom: unset;
+    margin: 0px auto !important;
+}
+button.carousel-control-next {
+    background: linear-gradient(270deg, black, transparent);
+}
+button.carousel-control-prev {
+    background: linear-gradient(90deg, black, transparent);
+}
+.carousel-caption.d-none.d-md-block {
+    z-index: 999;
+}
+
+
+.carousel-caption a {
+    color: #fff;
+    font-weight: 800;
+    font-size: 16px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 10px 20px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+.carousel-caption.d-none.d-md-block {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 200px;
+    display: flex !important;
+    margin: auto;
+    align-items: start;
+    justify-content: center;
+    flex-direction: column;
+}
