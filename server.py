@@ -18,7 +18,7 @@ NEWSAPI_ENDPOINT = 'https://newsapi.org/v2/everything?'
 NEWSAPI_KEY = 'e566609b3a074d10891c172ccbcdcd62'
 
 #Constants & Variables
-STOCKS = ['AAPL', 'GOOGL', 'AMZN', 'META', 'MSFT', 'NFLX', 'HDFCBANK.BSE', 'TCS.BSE']    #Inital Stocks to display
+STOCKS = ['AAPL', 'MSFT', 'HDFCBANK.BSE']    #Inital Stocks to display
 GRAPHS = []    #for storing all objects 
 ARTICLES = []    #for storing articles
 LEN = 0 
@@ -51,7 +51,7 @@ class Graph():
                             title=f'{self.name}: {self.DELTA}%   Current Price: {self.df["open"][0]}', 
                             hover_data=['volume'], 
                             template="plotly_dark")
-        pyo.plot(self.line, filename=rf'templates\{self.name}line.html')
+        pyo.plot(self.line, filename=rf'templates/{self.name}line.html')
 
     def candle(self):
         '''Create candlestick and saves it as a html file in assets folder'''
@@ -61,7 +61,7 @@ class Graph():
             high=self.df['high'],
             low=self.df['low'],
             close=self.df['close'])])
-        pyo.plot(self.candle, filename=rf'templates\{self.name}candle.html')
+        pyo.plot(self.candle, filename=rf'templates/{self.name}candle.html')
 
         
 def fetch_data(stock):
@@ -76,12 +76,12 @@ def fetch_data(stock):
     response = requests.get(url=ALPHAVANTAGE_API_ENDPOINT, params=parameters_daily)
     if response.status_code == 200:
         daily_data = response.text
-        with open(rf'static\assets\csv\{stock}.csv', mode='w') as file:
+        with open(rf'static/assets/csv/{stock}.csv', mode='w') as file:
             file.write(daily_data)
 
 def create_obj(stock):
     '''Reads the csv files and creates Graph object then appends to list GRAPHS'''
-    df = pd.read_csv(rf'static\assets\csv\{stock}.csv')
+    df = pd.read_csv(rf'static/assets/csv/{stock}.csv')
     graph = Graph(df=df, name=stock)
     GRAPHS.append(graph)
 
