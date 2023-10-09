@@ -67,7 +67,7 @@ class Graph():
 def fetch_data(stock):
     '''GET request to alphavantage API to download csv and save it in assets'''
     parameters_daily = {
-    'function': 'TIME_SERIES_DAILY_ADJUSTED',
+    'function': 'TIME_SERIES_DAILY',
     'symbol': stock,
     'outputsize': 'compact',
     'apikey': ALPHAVANTAGE_APIKEY,
