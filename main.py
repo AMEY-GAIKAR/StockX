@@ -10,7 +10,7 @@ load_dotenv()
 STOCKS = ['AAPL', 'MSFT', 'HDFCBANK.BSE']    #Inital Stocks to display
 GRAPHS = []    #for storing all objects 
 ARTICLES = []    #for storing articles
-LEN = len(ARTICLES) 
+# LEN = 0
 
 def initialize():
     '''Downloads csv, creates Graph object and fetches news articles for all items in list STOCKS'''
