@@ -5,20 +5,19 @@ import plotly.offline as pyo
 
 #Class to create Graph object
 class Graph():
-    def __init__(self, name, df):
-        self.name = name
-        self.df = df
+    def __init__(self, name: str, df: pd.DataFrame) -> None:
+        self.name: str = name
+        self.df: pd.DataFrame = df
         self.process()  #Calculates Current Price, Difference and converts to datetime 
 
-    def process(self):
+    def process(self) -> None:
         self.df['timestamp'] = pd.to_datetime(self.df['timestamp']) #Converts timestamp to datetime type
-        self.DELTA = round((self.df['open'][0] - self.df['open'][1]) / self.df['open'][0] * 100 , 3)    #Calculates difference between today and yesterday 
-        self.price = self.df['open'][0] #Current Price
+        self.DELTA: float = round((self.df['open'][0] - self.df['open'][1]) / self.df['open'][0] * 100 , 3)    #Calculates difference between today and yesterday 
+        self.price: float = self.df['open'][0] #Current Price
     
-    def line(self):
+    def Line(self) -> None:
         '''Create line graph and saves it as a html file in assets folder'''
-        self.line = px.line(data_frame=self.df, 
-                            x=self.df['timestamp'], 
+        self.line: go.Figure = px.line(data_frame=self.df, x=self.df['timestamp'], 
                             y=self.df['open'], 
                             labels={'x':'', 'y':''}, 
                             title=f'{self.name}: {self.DELTA}%   Current Price: {self.df["open"][0]}', 
@@ -26,9 +25,9 @@ class Graph():
                             template="plotly_dark")
         pyo.plot(self.line, filename=rf'templates/{self.name}line.html')
 
-    def candle(self):
+    def Candle(self) -> None:
         '''Create candlestick and saves it as a html file in assets folder'''
-        self.candle = go.Figure(data=[go.Candlestick(
+        self.candle: go.Figure = go.Figure(data=[go.Candlestick(
             x=self.df['timestamp'],
             open=self.df['open'],
             high=self.df['high'],
